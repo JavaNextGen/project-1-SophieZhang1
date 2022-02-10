@@ -2,19 +2,16 @@ package com.revature.services;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import com.revature.models.Reimbursement;
-import com.revature.models.Role;
 import com.revature.models.Status;
-import com.revature.models.User;
+import com.revature.models.User_Role;
+import com.revature.models.Users;
 import com.revature.repositories.ReimbursementDAO;
 
 public class ReimbursementServiceTest {
@@ -26,8 +23,7 @@ public class ReimbursementServiceTest {
 	private Reimbursement GENERIC_REIMBURSEMENT_1;
 	private Reimbursement GENERIC_REIMBURSEMENT_2;
 	private List<Reimbursement> GENERIC_ALL_PENDING_REIMBURSEMENTS;
-	private User GENERIC_EMPLOYEE_1;
-	private User GENERIC_FINANCE_MANAGER_1;
+	private Users GENERIC_FINANCE_MANAGER_1;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -37,13 +33,12 @@ public class ReimbursementServiceTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		GENERIC_EMPLOYEE_1 = new User(1, "genericEmployee1", "genericPassword", Role.EMPLOYEE);
-		GENERIC_FINANCE_MANAGER_1 = new User(1, "genericManager1", "genericPassword", Role.FINANCE_MANAGER);
+		new Users(1, "genericEmployee1", "genericPassword", User_Role.employee, null, null, 0);
+		GENERIC_FINANCE_MANAGER_1 = new Users(1, "genericManager1", "genericPassword", User_Role.financemanager, null, null, 0);
 		
-		REIMBURSEMENT_TO_PROCESS = new Reimbursement(2, Status.PENDING, GENERIC_EMPLOYEE_1, null, 150.00);
-		
-		GENERIC_REIMBURSEMENT_1 = new Reimbursement(1, Status.PENDING, GENERIC_EMPLOYEE_1, null, 100.00);
-		GENERIC_REIMBURSEMENT_2 = new Reimbursement(2, Status.APPROVED, GENERIC_EMPLOYEE_1, GENERIC_FINANCE_MANAGER_1, 150.00);
+		REIMBURSEMENT_TO_PROCESS = new Reimbursement();
+		GENERIC_REIMBURSEMENT_1 = new Reimbursement();
+		GENERIC_REIMBURSEMENT_2 = new Reimbursement();
 		
 		GENERIC_ALL_PENDING_REIMBURSEMENTS = new ArrayList<Reimbursement>();
 		GENERIC_ALL_PENDING_REIMBURSEMENTS.add(GENERIC_REIMBURSEMENT_1);
@@ -64,7 +59,7 @@ public class ReimbursementServiceTest {
 	public void testGetReimbursementByStatusPassesWhenReimbursementsAreSuccessfullyReturned() {
 		when(reimbursementDAO.getByStatus(any())).thenReturn(GENERIC_ALL_PENDING_REIMBURSEMENTS);
 		
-		assertEquals(GENERIC_ALL_PENDING_REIMBURSEMENTS, reimbursementService.getReimbursementsByStatus(Status.PENDING));
+		assertEquals(GENERIC_ALL_PENDING_REIMBURSEMENTS, reimbursementService.getReimbursementByStatus(Status.PENDING));
 		
 		verify(reimbursementDAO).getByStatus(Status.PENDING);
 	}

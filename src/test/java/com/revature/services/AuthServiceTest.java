@@ -4,42 +4,38 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
-
 import java.util.Optional;
-
 import com.revature.exceptions.NewUserHasNonZeroIdException;
 import com.revature.exceptions.RegistrationUnsuccessfulException;
-import com.revature.repositories.UserDAO;
+import com.revature.repositories.UsersDAO;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import com.revature.exceptions.UsernameNotUniqueException;
-import com.revature.models.Role;
-import com.revature.models.User;
+import com.revature.models.User_Role;
+import com.revature.models.Users;
 
 public class AuthServiceTest {
 	
 	private static AuthService authService;
-	private static UserService userService;
-	private static UserDAO userDAO;
+	private static UsersService userService;
+	private static UsersDAO userDAO;
 
-	private User EMPLOYEE_TO_REGISTER;
-	private User GENERIC_EMPLOYEE_1;
-	private User GENERIC_FINANCE_MANAGER_1;
-
+	private Users EMPLOYEE_TO_REGISTER;
+	private Users GENERIC_EMPLOYEE_1;
+	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		authService = new AuthService();
-		userService = mock(UserService.class);
-		userDAO = mock(UserDAO.class);
+		userService = mock(UsersService.class);
+		userDAO = mock(UsersDAO.class);
 	}
 	
 	@Before
 	public void setUp() throws Exception {
-		EMPLOYEE_TO_REGISTER = new User(0, "genericEmployee1", "genericPassword", Role.EMPLOYEE);
-		GENERIC_EMPLOYEE_1 = new User(1, "genericEmployee1", "genericPassword", Role.EMPLOYEE);
-		GENERIC_FINANCE_MANAGER_1 = new User(1, "genericManager1", "genericPassword", Role.FINANCE_MANAGER);
+		EMPLOYEE_TO_REGISTER = new Users(0, "genericEmployee1", "genericPassword", User_Role.employee, null, null, 0);
+		GENERIC_EMPLOYEE_1 = new Users(1, "genericEmployee1", "genericPassword", User_Role.employee, null, null, 0);
+		new Users(1, "genericManager1", "genericPassword", User_Role.financemanager, null, null, 0);
 	}
 
 	@Test
@@ -57,7 +53,7 @@ public class AuthServiceTest {
 	@Test
 	public void testRegisterPassesWhenUsernameIsNotTaken() {
 		when(userService.getByUsername(anyString())).thenReturn(Optional.empty());
-		when(userDAO.create(anyObject())).thenReturn(GENERIC_EMPLOYEE_1);
+//		when(userDAO.create(anyObject())).thenReturn(GENERIC_EMPLOYEE_1);
 		
 		assertEquals(GENERIC_EMPLOYEE_1, authService.register(EMPLOYEE_TO_REGISTER));
 
@@ -67,7 +63,7 @@ public class AuthServiceTest {
 
 	@Test
 	public void testRegisterFailsWhenRegistrationIsUnsuccessful() {
-		when(userDAO.create(anyObject())).thenThrow(new RegistrationUnsuccessfulException());
+//		when(userDAO.create(anyObject())).thenThrow(new RegistrationUnsuccessfulException());
 
 		assertThrows(RegistrationUnsuccessfulException.class,
 				() -> authService.register(EMPLOYEE_TO_REGISTER)
